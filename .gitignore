@@ -1,0 +1,39 @@
+# =========================
+# .NET / Visual Studio / VS Code
+# =========================
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# =========================
+# Test results
+# =========================
+TestResults/
+**/*.trx
+
+# =========================
+# Logs / Output artifacts
+# =========================
+out/
+logs/
+*.log
+
+# =========================
+# OS / misc
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Secrets
+src/Secrets.cs
+# =========================
