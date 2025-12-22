@@ -63,7 +63,8 @@ namespace FootballReport.Filtering
             if (config == null) throw new ArgumentNullException(nameof(config));
 
             // 1) Применяем алиасы (raw -> canonical)
-            var competitionCanonical = TextNormalizer.ApplyAliasOrSelf(match.TournamentName, config.CompetitionAliases.Map);
+            var competitionClean = TextNormalizer.StripPrefixBeforeColon(match.TournamentName);
+            var competitionCanonical = TextNormalizer.ApplyAliasOrSelf(competitionClean, config.CompetitionAliases.Map);
             var homeCanonical = TextNormalizer.ApplyAliasOrSelf(match.HomeName, config.ClubAliases.Map);
             var awayCanonical = TextNormalizer.ApplyAliasOrSelf(match.AwayName, config.ClubAliases.Map);
 

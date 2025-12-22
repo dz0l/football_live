@@ -7,10 +7,10 @@ namespace FootballReport.Normalization
     /// <summary>
     /// Единственная точка нормализации текста в проекте.
     /// Используется для:
-    /// - сопоставления favorites
-    /// - применения aliases
-    /// - проверки blacklist
-    /// - подготовки строк для S-3 (FINAL/SEMI/1/2)
+        /// - сопоставления favorites
+        /// - применения aliases
+        /// - проверки blacklist
+        /// - подготовки строк для S-3 (FINAL/SEMI/1/2)
     ///
     /// Важно: нормализация НЕ должна "угадывать" смысл, только приводить строки
     /// к стабильному виду для сравнения.
@@ -75,6 +75,27 @@ namespace FootballReport.Normalization
             s = Regex.Replace(s, @"\s*/\s*", "/", RegexOptions.Compiled);
 
             return s;
+        }
+
+        /// <summary>
+        /// Убирает первый префикс до двоеточия, если после него есть текст. Например:
+        /// "ENGLAND: Premier League" -> "Premier League".
+        /// "ENGLAND: PREMIER: League" -> "PREMIER: League" (убираем только первую часть).
+        /// Если после двоеточия пусто, возвращает исходную строку без изменений.
+        /// </summary>
+        public static string StripPrefixBeforeColon(string? input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return string.Empty;
+
+            var trimmed = input.Trim();
+            var idx = trimmed.IndexOf(':');
+
+            if (idx < 0 || idx == trimmed.Length - 1)
+                return trimmed;
+
+            var after = trimmed[(idx + 1)..].Trim();
+            return after.Length == 0 ? trimmed : after;
         }
 
         /// <summary>
