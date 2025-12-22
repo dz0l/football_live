@@ -4,43 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{{TITLE}}</title>
-
-  <!-- Отдельный CSS -->
-  <link rel="stylesheet" href="report_styles.css" />
+  <style>
+{{INLINE_CSS}}
+  </style>
 </head>
-
 <body>
-  <header class="header">
-    <div class="title">{{TITLE}}</div>
-    <div class="meta">
-      <span class="meta-item">Дата: <strong>{{DATE}}</strong></span>
-      <span class="meta-sep">|</span>
-      <span class="meta-item">Таймзона: <strong>{{TZ}}</strong></span>
-    </div>
-  </header>
+  <div class="page">
+    <header class="header">
+      <div class="tz-label">{{TZ}}</div>
+    </header>
 
-  <main class="content">
-    <table class="report-table">
-      <thead>
-        <tr>
-          <th class="col-tournament">Турнир</th>
-          <th class="col-match">Клуб A vs Клуб B</th>
-          <th class="col-time">Время</th>
-          <th class="col-provider">ТВ-Провайдер</th>
-          <th class="col-channel">Канал</th>
-          <th class="col-chno">Номер канала</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{ROWS}}
-      </tbody>
-    </table>
-  </main>
+    <main class="content">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th class="col-tournament">Турнир</th>
+            <th class="col-match">Названия команд</th>
+            <th class="col-time">Время</th>
+            <th class="col-provider">Источник</th>
+            <th class="col-channel">Название Канала</th>
+            <th class="col-chno">Номер<br/>канала</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ROWS}}
+        </tbody>
+      </table>
+    </main>
 
-  <footer class="footer">
-    <div class="footer-note">
-      Этап 1: ТВ-данные не заполняются (колонки ТВ отображаются как “—”).
-    </div>
-  </footer>
+    <footer class="footer">
+      <div class="created-at">{{CREATED_AT}}</div>
+    </footer>
+  </div>
 </body>
 </html>

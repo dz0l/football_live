@@ -21,6 +21,7 @@ namespace FootballReport
         private static readonly string TemplatesDir = Path.Combine(ProjectRoot, "templates");
         private static readonly string OutDir = Path.Combine(ProjectRoot, "out");
         private static readonly string TemplateHtmlPath = Path.Combine(TemplatesDir, "report_template.html");
+        private static readonly string TemplateCssPath = Path.Combine(TemplatesDir, "report_styles.css");
         private static readonly string FavoritesClubsPath = Path.Combine(ConfigDir, "favorites_clubs.json");
         private static readonly string FavoritesCompetitionsPath = Path.Combine(ConfigDir, "favorites_competitions.json");
         private static readonly string AliasesClubsPath = Path.Combine(ConfigDir, "aliases_clubs.json");
@@ -40,46 +41,45 @@ namespace FootballReport
                     cts.Cancel();
                 };
 
-                // 0) Ключ и URL в коде (по твоему требованию)
                 var apiKey = Secrets.ApiKey;
                 var baseUrl = Secrets.BaseUrl;
 
                 if (string.IsNullOrWhiteSpace(apiKey) || string.IsNullOrWhiteSpace(baseUrl))
                 {
-                    Console.WriteLine("Secrets.ApiKey или Secrets.BaseUrl пустой. Отчёт не сформирован.");
+                    Console.WriteLine("Secrets.ApiKey и Secrets.BaseUrl должны быть заданы.");
                     return 2;
                 }
 
-                // 1) Быстрая проверка интернета (DNS)
                 if (!HasInternetByDns())
                 {
-                    Console.WriteLine("Нет доступа к интернету (DNS check). Отчёт не сформирован.");
+                    Console.WriteLine("Нет доступа к сети (DNS check).");
                     return 3;
                 }
 
-                // 2) Загружаем конфиги
                 var config = LoadAppConfig();
 
-                // 3) Читаем HTML шаблон
                 if (!File.Exists(TemplateHtmlPath))
                 {
-                    Console.WriteLine($"Не найден шаблон: {TemplateHtmlPath}");
+                    Console.WriteLine($"Не найден HTML-шаблон: {TemplateHtmlPath}");
+                    return 4;
+                }
+                if (!File.Exists(TemplateCssPath))
+                {
+                    Console.WriteLine($"Не найден файл стилей: {TemplateCssPath}");
                     return 4;
                 }
 
                 var templateHtml = File.ReadAllText(TemplateHtmlPath, Encoding.UTF8);
+                var templateCss = File.ReadAllText(TemplateCssPath, Encoding.UTF8);
 
-                // 4) Получаем матчи
                 var client = new Api.FlashscoreClient(apiKey, baseUrl);
                 var rawMatches = await client.GetTodayMatchesAsync(cts.Token);
 
-                // 5) Дедуп + сортировка
                 var matches = DedupByEventId(rawMatches)
                     .OrderBy(m => m.StartDateTimeUtc)
                     .ThenBy(m => m.EventId, StringComparer.Ordinal)
                     .ToList();
 
-                // 6) Фильтрация
                 var included = new List<Match>(capacity: matches.Count);
                 foreach (var m in matches)
                 {
@@ -88,23 +88,21 @@ namespace FootballReport
                         included.Add(m);
                 }
 
-                // 7) Пустой результат => файлов нет
                 if (included.Count == 0)
                 {
-                    Console.WriteLine("Сегодня матчей нет");
+                    Console.WriteLine("Подходящих матчей нет.");
                     return 0;
                 }
 
-                // 8) Генерация 3 HTML
                 Directory.CreateDirectory(OutDir);
 
                 var nowUtc = DateTimeOffset.UtcNow;
 
-                RenderAndSaveForOffset(included, templateHtml, nowUtc, TimezoneConverter.GmtPlus3, "GMT+3");
-                RenderAndSaveForOffset(included, templateHtml, nowUtc, TimezoneConverter.GmtPlus4, "GMT+4");
-                RenderAndSaveForOffset(included, templateHtml, nowUtc, TimezoneConverter.GmtPlus5, "GMT+5");
+                RenderAndSaveForOffset(included, templateHtml, templateCss, nowUtc, TimezoneConverter.GmtPlus3, "GMT+3");
+                RenderAndSaveForOffset(included, templateHtml, templateCss, nowUtc, TimezoneConverter.GmtPlus4, "GMT+4");
+                RenderAndSaveForOffset(included, templateHtml, templateCss, nowUtc, TimezoneConverter.GmtPlus5, "GMT+5");
 
-                Console.WriteLine($"Готово. Сгенерировано файлов: 3 (out/). Матчей в отчёте: {included.Count}");
+                Console.WriteLine($"Готово. Сформировано HTML файлов: 3 (out/). Матчей: {included.Count}");
                 return 0;
             }
             catch (OperationCanceledException)
@@ -123,6 +121,7 @@ namespace FootballReport
         private static void RenderAndSaveForOffset(
             IReadOnlyList<Match> includedUtcSorted,
             string templateHtml,
+            string templateCss,
             DateTimeOffset nowUtc,
             TimeSpan offset,
             string tzLabel)
@@ -130,13 +129,14 @@ namespace FootballReport
             var reportDateLocal = nowUtc.ToOffset(offset);
             var dateStr = TimezoneConverter.FormatDateForFilename(reportDateLocal);
 
-            var title = $"Футбол — {dateStr} — {tzLabel}";
+            var title = $"Футбол {dateStr} - {tzLabel}";
 
             var options = new HtmlReportRenderer.RenderOptions(
                 title: title,
                 timezoneLabel: tzLabel,
                 timezoneOffset: offset,
-                reportDateLocal: reportDateLocal
+                reportDateLocal: reportDateLocal,
+                inlineCss: templateCss
             );
 
             var html = HtmlReportRenderer.RenderHtml(templateHtml, includedUtcSorted, options);

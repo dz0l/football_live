@@ -4,13 +4,11 @@ using System.Text.RegularExpressions;
 namespace FootballReport.Normalization
 {
     /// <summary>
-    /// S-3: детект маркеров стадий в tournamentName:
+    /// Определение стадий для включения матчей без фаворитов:
     /// - FINAL / FINALS
     /// - SEMI / SEMIFINAL
     /// - 1/2
-    ///
-    /// Плюс: разбор строки на prefix/base/suffix (детерминированная эвристика),
-    /// чтобы дальше можно было расширять логику нормализации турниров.
+    /// - SUPER CUP (считаем финалом, одиночный матч)
     /// </summary>
     public static class TournamentNameParserS3
     {
@@ -20,6 +18,9 @@ namespace FootballReport.Normalization
 
         private static readonly Regex SemiToken =
             new Regex(@"\bSEMI\b|\bSEMIFINALS?\b", RegexOptions.Compiled);
+
+        private static readonly Regex SuperCupToken =
+            new Regex(@"\bSUPER\s+CUP\b", RegexOptions.Compiled);
 
         public sealed class S3ParseResult
         {
@@ -60,13 +61,13 @@ namespace FootballReport.Normalization
         }
 
         /// <summary>
-        /// Главный метод S-3.
+        /// Парсинг стадий S-3.
         /// </summary>
         public static S3ParseResult Parse(string? tournamentName)
         {
             var raw = (tournamentName ?? string.Empty).Trim();
 
-            // 1) Детект маркеров стадий по нормализованной строке
+            // 1) Нормализация для поиска маркеров
             var scan = TextNormalizer.NormalizeForStageMarkerScan(raw);
 
             // FINAL/FINALS как отдельные токены
@@ -75,10 +76,13 @@ namespace FootballReport.Normalization
             // SEMI/SEMIFINAL(S) как отдельные токены
             var hasSemi = SemiToken.IsMatch(scan);
 
-            // 1/2 (после NormalizeForStageMarkerScan: "1 / 2" => "1/2")
+            // SUPER CUP считаем финальной стадией
+            var hasSuperCup = SuperCupToken.IsMatch(scan);
+
+            // 1/2 (NormalizeForStageMarkerScan: "1 / 2" => "1/2")
             var hasHalf = scan.Contains("1/2", StringComparison.Ordinal);
 
-            // 2) Prefix/Base/Suffix — детерминированная эвристика (без "догадок", только стабильные правила)
+            // 2) Prefix/Base/Suffix в строке (для диагностики)
             SplitPrefixBaseSuffix(raw, out var prefix, out var @base, out var suffix);
 
             return new S3ParseResult(
@@ -87,7 +91,7 @@ namespace FootballReport.Normalization
                 prefix: prefix,
                 @base: @base,
                 suffix: suffix,
-                hasFinalMarker: hasFinal,
+                hasFinalMarker: hasFinal || hasSuperCup,
                 hasSemiMarker: hasSemi,
                 hasHalfMarker: hasHalf
             );

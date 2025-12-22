@@ -1,14 +1,8 @@
-/* =========================
-   Печать (A4, альбом)
-   ========================= */
 @page {
   size: A4 landscape;
   margin: 10mm;
 }
 
-/* =========================
-   Базовые стили
-   ========================= */
 html, body {
   height: 100%;
 }
@@ -17,93 +11,96 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Times New Roman", Times, serif;
-  font-size: 16pt;
+  font-size: 12pt;
   line-height: 1.2;
   color: #000;
   background: #fff;
 }
 
-/* =========================
-   Шапка
-   ========================= */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .header {
+  text-align: center;
   margin-bottom: 8mm;
 }
 
-.title {
+.tz-label {
+  color: #c00;
   font-weight: 700;
-  font-size: 18pt; /* допустимо 16–18, взяли 18 для заголовка */
+  font-size: 12pt;
   margin-bottom: 2mm;
 }
 
-.meta {
-  font-size: 14pt;
-}
-
-.meta-item strong {
-  font-weight: 700;
-}
-
-.meta-sep {
-  margin: 0 2mm;
-}
-
-/* =========================
-   Таблица
-   ========================= */
 .report-table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed; /* важно для предсказуемой печати */
+  table-layout: fixed;
 }
 
 .report-table th,
 .report-table td {
   border: 1px solid #000;
-  padding: 3mm 3mm;
-  vertical-align: top;
+  vertical-align: middle;
   word-wrap: break-word;
   overflow-wrap: anywhere;
 }
 
-.report-table th {
+.report-table thead th {
+  background: #fff200;
   font-weight: 700;
+  text-align: center;
+  padding: 3.5mm 2mm;
+}
+
+.report-table tbody td {
+  padding: 2.5mm 2mm;
+}
+
+.report-table thead th.col-match {
+  background: #fff200;
+}
+
+.report-table tbody tr:nth-child(even) {
+  background: #fdfdf5;
+}
+
+.report-table td {
   text-align: left;
 }
 
-/* Колонки: под A4 landscape + 16pt.
-   Если будет тесно — подвинем проценты. */
-.col-tournament { width: 26%; }
-.col-match      { width: 28%; }
-.col-time       { width: 10%; text-align: center; }
-.col-provider   { width: 14%; }
-.col-channel    { width: 14%; }
-.col-chno       { width: 8%;  text-align: center; }
-
-/* Ячейка времени в body */
-.report-table td.col-time {
+.report-table .col-time,
+.report-table .col-chno {
   text-align: center;
   white-space: nowrap;
 }
 
-/* =========================
-   Подвал
-   ========================= */
+.report-table .col-match {
+  background: rgb(255, 211, 121);
+  text-align: center;
+}
+
+.col-tournament { width: 32%; }
+.col-match      { width: 26%; }
+.col-time       { width: 8%;  }
+.col-provider   { width: 12%; }
+.col-channel    { width: 14%; }
+.col-chno       { width: 8%;  }
+
+.content {
+  flex: 1 0 auto;
+}
+
 .footer {
-  margin-top: 8mm;
+  margin-top: auto;
+  padding-top: 6mm;
   font-size: 12pt;
+  text-align: right;
 }
 
-.footer-note {
-  border-top: 1px solid #000;
-  padding-top: 3mm;
-}
-
-/* =========================
-   Печать: убираем лишнее
-   ========================= */
-@media print {
-  body {
-    background: #fff;
-  }
+.created-at {
+  display: inline-block;
 }
