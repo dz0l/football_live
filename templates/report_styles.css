@@ -1,0 +1,106 @@
+@page {
+  size: A4 landscape;
+  margin: 10mm;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12pt;
+  line-height: 1.2;
+  color: #000;
+  background: #fff;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 8mm;
+}
+
+.tz-label {
+  color: #c00;
+  font-weight: 700;
+  font-size: 12pt;
+  margin-bottom: 2mm;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #000;
+  vertical-align: middle;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.report-table thead th {
+  background: #fff200;
+  font-weight: 700;
+  text-align: center;
+  padding: 3.5mm 2mm;
+}
+
+.report-table tbody td {
+  padding: 2.5mm 2mm;
+}
+
+.report-table thead th.col-match {
+  background: #fff200;
+}
+
+.report-table tbody tr:nth-child(even) {
+  background: #fdfdf5;
+}
+
+.report-table td {
+  text-align: left;
+}
+
+.report-table .col-time,
+.report-table .col-chno {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.report-table .col-match {
+  background: rgb(255, 211, 121);
+  text-align: center;
+}
+
+.col-tournament { width: 32%; }
+.col-match      { width: 26%; }
+.col-time       { width: 8%;  }
+.col-provider   { width: 12%; }
+.col-channel    { width: 14%; }
+.col-chno       { width: 8%;  }
+
+.content {
+  flex: 1 0 auto;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 6mm;
+  font-size: 12pt;
+  text-align: right;
+}
+
+.created-at {
+  display: inline-block;
+}
