@@ -1,1 +1,0 @@
-- 2025-12-23: Добавлен редактор конфигов в WinForms (вкладка "Конфиг") с поддержкой favorites/blacklist/aliases, чтение/запись JSON через ConfigFilesService. Если потребуется откат, уберите ConfigEditorControl и ConfigFilesService или верните заглушку в MainForm.Designer.cs.
