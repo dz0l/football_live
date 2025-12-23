@@ -13,6 +13,7 @@
   <!-- Не включаем тесты в основной проект -->
   <ItemGroup>
     <Compile Remove="tests\**\*.cs" />
+    <Compile Remove="FootballReport.Ui\**\*.cs" />
   </ItemGroup>
 
 </Project>

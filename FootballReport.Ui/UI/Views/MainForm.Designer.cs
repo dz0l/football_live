@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using FootballReport.Ui.UI.Controls;
+using FootballReport.Ui.UI.Views;
 
 namespace FootballReport.Ui.UI.Views
 {
@@ -43,6 +44,7 @@ namespace FootballReport.Ui.UI.Views
         private TabPage tabTest;
 
         private RichTextBox txtLog;
+        private ConfigEditorControl configEditor;
 
         private StatusBulb bulbApi;
         private StatusBulb bulbTv1;
@@ -98,6 +100,7 @@ namespace FootballReport.Ui.UI.Views
             tabTest = new TabPage();
 
             txtLog = new RichTextBox();
+            configEditor = new ConfigEditorControl();
 
             bulbApi = new StatusBulb();
             bulbTv1 = new StatusBulb();
@@ -286,8 +289,9 @@ namespace FootballReport.Ui.UI.Views
             txtLog.Font = new System.Drawing.Font("Consolas", 9.5F);
             tabLog.Controls.Add(txtLog);
 
-            // Config placeholder
-            tabConfig.Controls.Add(new Label { Dock = DockStyle.Fill, TextAlign = System.Drawing.ContentAlignment.MiddleCenter, Text = "Config editor (заглушка)" });
+            // Config editor
+            configEditor.Dock = DockStyle.Fill;
+            tabConfig.Controls.Add(configEditor);
 
             // Print placeholder (A4 landscape fixed)
             tabPrint.Controls.Add(new Label { Dock = DockStyle.Fill, TextAlign = System.Drawing.ContentAlignment.MiddleCenter, Text = "Профиль печати: A4 landscape (фиксировано)\n(позже: масштаб/опции)" });
